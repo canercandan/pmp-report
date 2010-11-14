@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+SRC=report
+REPORT_NAME=report
+REPORT_TEX=../${REPORT_NAME}.tex
+REPORT_MP=${REPORT_NAME}.mp
+
+mkdir $SRC
+cd $SRC
+pdflatex $REPORT_TEX && mpost $REPORT_MP && pdflatex $REPORT_TEX
+cd ..

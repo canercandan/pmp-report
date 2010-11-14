@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-mkdir rapport
-cd rapport
-pdflatex ../rapport.tex && mpost rapport.mp && pdflatex ../rapport.tex
-cd ..
