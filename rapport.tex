@@ -1,0 +1,76 @@
+\documentclass[a4paper,oneside,12pt]{article}
+
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{longtable,geometry}
+\usepackage{emp}
+
+\ifx\pdftexversion\undefined
+\usepackage[dvips]{graphicx}
+\else
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsRule{*}{mps}{*}{}
+\fi
+
+\pagestyle{headings}
+\geometry{dvips,a4paper,margin=1.0in}
+
+\title{Parallelisation et modèles de programmation\\Exercices}
+\author{Caner Candan, M2 MIHP}
+\date\today
+
+\begin{document}
+\begin{empfile}
+
+\begin{empcmds}
+input metauml;
+\end{empcmds}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{Produit matriciel}
+
+\subsection{Enoncé}
+
+\textit{Matrice: Décrire un algorithme PRAM pour le modèle EREW qui utilise $O(n^3)$ processeurs pour multiplier deux matrices de taille $n*n$.\footnote{\url{http://fr.wikipedia.org/wiki/Produit_matriciel}}}
+
+
+\begin{displaymath}
+c_{ij} = \sum_{k=0}^n a_{ik} b_{kj}
+\end{displaymath}
+
+% How To Embed UML in LaTeX
+% http://www.cs.bgu.ac.il/~gwiener/software-engineering/how-to-embed-uml-in-latex/
+
+\section{Design}
+
+Tous les exercices ont été developpés en C++ en utilisant le paradigme de programmation objet et le design qui suit a été constitué pour regrouper les différents composants de calculer utilisés.
+
+\begin{center}
+\begin{emp}[classdiag](20, 20)
+Class.A("Point")
+       ("+x: int",
+        "+y: int") ();
+
+Class.B("Circle")
+       ("radius: int")
+       ("+getRadius(): int",
+        "+setRadius(r: int):void");
+
+topToBottom(45)(A, B);
+
+drawObjects(A, B);
+
+clink(aggregationUni)(A, B)
+\end{emp}
+
+\end{center}
+
+\end{empfile}
+\end{document}
