@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-PROJECT(exercices)
+PROJECT(pmp)
 
 FIND_PACKAGE(OpenMP REQUIRED)
 
@@ -10,13 +10,14 @@ IF(OPENMP_FOUND)
 ENDIF()
 
 IF(UNIX)
-  ADD_DEFINITIONS( -Wall -W -Wextra )
+  ADD_DEFINITIONS( -Wall -W -Wextra -pedantic )
   ADD_DEFINITIONS( -O3 )
   ADD_DEFINITIONS( -g3 )
 ENDIF()
 
 SET(SOURCES
   example
+  concept
   )
 
 FOREACH(current ${SOURCES})
