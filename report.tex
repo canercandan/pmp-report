@@ -27,38 +27,170 @@ Une solution consisterait à diffuser dans un premier temps toutes les données 
 \subsubsection{La diffusion}
 En respectant le modèle EREW, les matrices $A$ et $B \in K_{n*n}$ sont copiées, dans un premier temps, $n$ fois dans les cubes $A'$ et $B' \in K_{n*n*n}$. Ceci permet de reserver une dimension du cube à un processus et éviter toute lecture concurrente.\\
 
-L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusion qui prend comme donnée en entrée une matrice $M \in K_{n*n}$ et retourne un cube $M' \in K_{n*n*n}$ . Elle est exprimée en 2 étapes. La première consiste à affecter, en utilisant $O(n^2)$ processeurs, chaque point de la matrice dans la première dimension du cube. La deuxième effectue la copie en diffusion\footnote{Hot potato routing : \url{http://en.wikipedia.org/wiki/Hot_potato_routing}} de chaque point de la matrice situé à la première dimension du cube vers les autres dimensions du cube en utilisant $O(log n)$ processeurs et pour une matrice entière en $O(n^2 * log n)$.
+L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusion qui prend comme donnée en entrée une matrice $M \in K_{n*n}$ et retourne un cube $M' \in K_{n*n*n}$ . Elle est exprimée en 2 étapes. La première consiste à affecter, en utilisant $O(n^2)$ processeurs, chaque point de la matrice dans la première dimension du cube. La deuxième effectue la copie en diffusion\footnote{Hot potato routing : \url{http://en.wikipedia.org/wiki/Hot_potato_routing}} de chaque point de la matrice situé à la première dimension du cube vers les autres dimensions du cube en utilisant $O(\log{n})$ processeurs et pour une matrice entière en $O(n^2 * \log{n})$.
 
 \incmargin{1em}
+\restylealgo{boxed}
 \begin{algorithm}
   \label{diffusion}
+  \Donnees{$M \in K_{n*n}, n \in N$}
+  \Res{$M' \in K_{n*n*n}$}
+  \Deb{
+    \textbf{parallèle}
+    \Pour{$i\leftarrow 0$ \KwA $n$}{
+      \textbf{parallèle}
+      \Pour{$j\leftarrow 0$ \KwA $n$}{
+        $m'(i,j,0)\leftarrow m(i,j)$
+      }
+    }
+
+    \textbf{parallèle}
+    \Pour{$s\leftarrow 0$ \KwA $\log_2{n}$}{
+      \textbf{parallèle}
+      \Pour{$h\leftarrow 0$ \KwA $s^2$}{
+        \textbf{parallèle}
+        \Pour{$i\leftarrow 0$ \KwA $n$}{
+          \textbf{parallèle}
+          \Pour{$j\leftarrow 0$ \KwA $n$}{
+            $m'(i,j,2^s + h)\leftarrow m'(i,j,h)$
+          }
+        }
+      }
+    }
+  }
   \caption{Copie de matrice en diffusion}
 \end{algorithm}
 
 \subsubsection{Le produit}
 
+Toujours en respectant le modèle EREW, le produit matriciel prend en paramêtre les cubes $A$ et $B \in K_{n*n*n}$ tel que chaque processus utilise sa dimension de cube respective pour lire les données de $a_{ij}$ et $b_{ij}$.\\
 
+L'algorithme \ref{produit} présente le pseudo-code de la fonction de produit matriciel qui prend comme donnée en entrée les cubes $A$ et $B \in K_{n*n*n}$ et retourne une matrice $C \in K_{n*n}$. L'affectation des valeurs dans la matrice $C$ se fait en $O(n^2)$ et le produit de $c_{ij}$ se fait en $O(n)$.
+
+\incmargin{1em}
+\restylealgo{boxed}
+\begin{algorithm}
+  \label{produit}
+  \Donnees{$A,B \in K_{n*n*n}, n \in N$}
+  \Res{$C \in K_{n*n}$}
+  \Deb{
+    \textbf{parallèle}
+    \Pour{$i\leftarrow 0$ \KwA $n$}{
+      \textbf{parallèle}
+      \Pour{$j\leftarrow 0$ \KwA $n$}{
+        $c(i,j)\leftarrow \sum_{k=0}^n a(i,k,p) * b(k,j,p)$
+      }
+    }
+  }
+  \caption{Produit matriciel}
+\end{algorithm}
 
 \subsubsection{L'implémentation}
+
+Après avoir décrit la fonction de diffusion et le produit matriciel respectant tous deux le modèle EREW, nous allons voir l'implementation d'un produit de deux matrices $A$ et $B \in K_{n*n}$ produisant une troisième matrice $C \in K_{n*n}$.\\
+
+L'algorithme \ref{implementation} décrit l'implémentation.
+
+\incmargin{1em}
+\restylealgo{boxed}
+%\linesnumbered
+\begin{algorithm}
+  \label{implementation}
+  \Donnees{$A,B \in K_{n*n}, n \in N$}
+  \Res{$C \in K_{n*n}$}
+  \Deb{
+    $A'\leftarrow diffusion(A,n)$
+
+    $B'\leftarrow diffusion(B,n)$
+
+    $C\leftarrow produit(A',B')$
+  }
+  \caption{Implémentation du produit matriciel}
+\end{algorithm}
+
+\newpage
 
 \section{Découpage d'un tableau binaire}
 
 \subsection{Enoncé}
 
+\textit{Découpage d'un tableau : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme EREW de complexit $O(\log{n})$ utilisant $O(n)$ processeurs pour ranger tous les éléments $1$ à la droite du tableau tout en maintenant leur ordre relatif (propriété de stabilité des éléments).}
+
+\textit{Hint : effectuer un calcul de prefixe pour déterminer quel devrait être la position de chaque élément.}
+
 \subsection{Solution}
+
+Notre tableau étant binaire, contenant que des $0$ et $1$, il devient facile de compter le nombre de $1$ en sommant toutes les valeurs du tableau pour ensuite déterminer à quel index placer les $0$ et $1$.
+
+Toute fois pour respecter l'énoncé et avoir une complexité en $O(\log{n})$, nous allons devoir utiliser la fonction calculant la somme des prefixes.
 
 \subsubsection{Déterminer l'index}
 
+L'algorithme \ref{index} permet de déterminer l'index qui consituera la frontière entre les $0$ et $1$ dans le tableau. Pour cela il prend en paramètre le tableau binaire $B \in K_n$ ainsi que la taille du tableau $n \in N$.
+
+\incmargin{1em}
+\restylealgo{boxed}
+%\linesnumbered
+\begin{algorithm}
+  \label{index}
+  \Donnees{$B \in K_n, n \in N$}
+  \Res{$i \in N$}
+  \Deb{
+    $i\leftarrow {n - calcul\_somme\_prefixe(B)}$
+  }
+  \caption{Trouver l'index}
+\end{algorithm}
+
 \subsubsection{Créer le tableau binaire}
+
+L'algorithme \ref{creer_tableau_binaire} prend en paramètre l'index et la taille et crée un tableau binaire trié en fonction de l'index, $0$ à gauche et $1$ à droite.
+
+\incmargin{1em}
+\restylealgo{boxed}
+%\linesnumbered
+\begin{algorithm}
+  \label{creer_tableau_binaire}
+  \Donnees{$i,n \in N$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    \textbf{parallèle}
+    \Pour{$j\leftarrow 0$ \KwA $i$}{
+      $B'(i)\leftarrow 0$
+    }
+    \textbf{parallèle}
+    \Pour{$j\leftarrow i$ \KwA $n$}{
+      $B'(i)\leftarrow 1$
+    }
+  }
+  \caption{Création du tableau binaire trié}
+\end{algorithm}
 
 \subsubsection{Implémentation}
 
+L’algorithme \ref{decoupage} illustre la solution.
 
-% TODO
-% \section{Premier élément non-nul}
-% \subsection{Enoncé}
-% Premier élément non-nul : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme CRCW de complexit $O(1)$ qui utilise $O(n)$ processeurs.
+\incmargin{1em}
+\restylealgo{boxed}
+%\linesnumbered
+\begin{algorithm}
+  \label{decoupage}
+  \Donnees{$B \in K_n$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    $i\leftarrow trouver\_index(B)$
 
+    $B'\leftarrow creer\_tableau\_binaire(i)$
+  }
+  \caption{Découpage d’un tableau binaire}
+\end{algorithm}
+
+
+%TODO
+\section{Premier élément non-nul}
+\subsection{Enoncé}
+\textit{Premier élément non-nul : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme CRCW de complexit $O(1)$ qui utilise $O(n)$ processeurs.}
+
+\newpage
 
 \section{Design}
 
