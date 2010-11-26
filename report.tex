@@ -1,25 +1,7 @@
-\documentclass[a4paper,oneside,12pt]{article}
+\documentclass[oneside,11pt]{article}
+\usepackage[algo,uml,french,url]{my_package}
 
-\usepackage[francais]{babel}
-\usepackage[utf8]{inputenc}
-%\usepackage[T1]{fontenc}
-\usepackage{url}
-\usepackage{longtable,geometry}
-\usepackage{emp}
-
-\ifx\pdftexversion\undefined
-\usepackage[dvips]{graphicx}
-\else
-\usepackage[pdftex]{graphicx}
-\DeclareGraphicsRule{*}{mps}{*}{}
-\fi
-
-\pagestyle{headings}
-\geometry{dvips,a4paper,margin=1.0in}
-
-\title{Parallelisation et modèles de programmation\\Exercices}
-\author{Caner Candan, M2 MIHP}
-\date\today
+\title{Parallelisation \& modèles\\de programmation}
 
 \begin{document}
 \begin{empfile}
@@ -37,20 +19,50 @@ input metauml;
 \section{Produit matriciel}
 
 \subsection{Enoncé}
+\textit{Matrice: Décrire un algorithme PRAM pour le modèle EREW qui utilise $O(n^3)$ processeurs pour multiplier deux matrices de taille $n*n$.\footnote{$c_{ij} = \sum_{k=0}^n a_{ik} b_{kj}$: \url{http://fr.wikipedia.org/wiki/Produit_matriciel}}}
 
-\textit{Matrice: Décrire un algorithme PRAM pour le modèle EREW qui utilise $O(n^3)$ processeurs pour multiplier deux matrices de taille $n*n$.\footnote{\url{http://fr.wikipedia.org/wiki/Produit_matriciel}}}
+\subsection{Solution}
+Une solution consisterait à diffuser dans un premier temps toutes les données des matrices à multiplier à chaque processus puis de faire le produit des matrices en prenant le soin que chaque processus utilise les données qui leur est propre.
+
+\subsubsection{La diffusion}
+En respectant le modèle EREW, les matrices $A$ et $B \in K_{n*n}$ sont copiées, dans un premier temps, $n$ fois dans les cubes $A'$ et $B' \in K_{n*n*n}$. Ceci permet de reserver une dimension du cube à un processus et éviter toute lecture concurrente.\\
+
+L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusion qui prend comme donnée en entrée une matrice $M \in K_{n*n}$ et retourne un cube $M' \in K_{n*n*n}$ . Elle est exprimée en 2 étapes. La première consiste à affecter, en utilisant $O(n^2)$ processeurs, chaque point de la matrice dans la première dimension du cube. La deuxième effectue la copie en diffusion\footnote{Hot potato routing : \url{http://en.wikipedia.org/wiki/Hot_potato_routing}} de chaque point de la matrice situé à la première dimension du cube vers les autres dimensions du cube en utilisant $O(log n)$ processeurs et pour une matrice entière en $O(n^2 * log n)$.
+
+\incmargin{1em}
+\begin{algorithm}
+  \label{diffusion}
+  \caption{Copie de matrice en diffusion}
+\end{algorithm}
+
+\subsubsection{Le produit}
 
 
-\begin{displaymath}
-c_{ij} = \sum_{k=0}^n a_{ik} b_{kj}
-\end{displaymath}
 
-% How To Embed UML in LaTeX
-% http://www.cs.bgu.ac.il/~gwiener/software-engineering/how-to-embed-uml-in-latex/
+\subsubsection{L'implémentation}
+
+\section{Découpage d'un tableau binaire}
+
+\subsection{Enoncé}
+
+\subsection{Solution}
+
+\subsubsection{Déterminer l'index}
+
+\subsubsection{Créer le tableau binaire}
+
+\subsubsection{Implémentation}
+
+
+% TODO
+% \section{Premier élément non-nul}
+% \subsection{Enoncé}
+% Premier élément non-nul : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme CRCW de complexit $O(1)$ qui utilise $O(n)$ processeurs.
+
 
 \section{Design}
 
-Tous les exercices ont été developpés en C++ en utilisant le paradigme de programmation objet et le design qui suit a été constitué pour regrouper les différents composants de calculer utilisés.
+Tous les exercices ont été developpés en C++ en utilisant le paradigme de programmation objet et le design qui suit a été élaboré pour regrouper les différents composants de calculs. Néanmoins une recherche a été effectué pour determiner les limites de OpenMP et C++. Il semblerait que les conteneurs fournit par la STL\footnote{Standard Template Library : \url{http://www.sgi.com/tech/stl/}} ne soient pas threadsafe\footnote{On dit qu’un programme ou qu'une portion de code est thread-safe s'il fonctionne correctement durant une exécution simultanée par plusieurs threads (processus légers). \url{http://fr.wikipedia.org/wiki/Threadsafe}}. Une étude\footnote{C++ and OpenMP : \url{http://www.compunity.org/events/pastevents/parco07/parco_cpp_openmp.pdf}} donne une liste non-exaustive des précautions à prendre lors de l’utilisation de OpenMP en C++. Cependant la version OpenMP 3.0 apporte des concepts nouveaux permettant l’utilisation notemment des iterateurs. On peut ainsi, par exemple, s’affranchir de simple indexeur de tableau et étendre la parallelisation sur des listes chainées.
 
 \begin{center}
 \begin{emp}[classdiag](20, 20)

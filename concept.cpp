@@ -304,6 +304,9 @@ class OMPBroadcastMatrix : public OMPComputeConstUnary< const OMPMatrix< Atom >&
 public:
     OMPMatrix3D< Atom > operator()( const OMPMatrix< Atom >& m ) const
     {
+	OMPMatrix3D< Atom > M3D( m.nrows(), m );
+	return M3D;
+
 	size_t nrows = m.nrows();
 	size_t ncols = m.ncols();
 
@@ -316,18 +319,12 @@ public:
 
 	size_t size = ::log2( nrows );
 
-#pragma omp parallel for shared( size, nrows, ncols )
+#pragma omp parallel for shared( size )
 	for ( size_t s = 0; s < size; ++s )
 	    {
 		for ( size_t h = 0, end = s*s; h < end; ++h )
 		    {
-			for ( size_t i = 0; i < nrows; ++i )
-			    {
-				for ( size_t j = 0; j < ncols; ++j )
-				    {
-					m3d[(1 << s) + h][i][j] = m3d[h][i][j];
-				    }
-			    }
+			m3d[(1 << s) + h] = m3d[h];
 		    }
 	    }
 
@@ -339,13 +336,33 @@ public:
 template < typename Atom >
 OMPMatrix< Atom > operator*( const OMPMatrix< Atom >& A, const OMPMatrix< Atom >& B )
 {
-    OMPMatrix3D< Atom > A3d = OMPBroadcastMatrix()( A );
-    OMPMatrix3D< Atom > B3d = OMPBroadcastMatrix()( B );
+    size_t nrows = A.nrows();
+    size_t ncols = A.ncols();
 
-    std::cout << "matrix product" << std::endl;
-    std::cout << "here's A" << std::endl << A3d << std::endl;
-    std::cout << "here's B" << std::endl << B3d << std::endl;
-    return OMPMatrix< Atom >();
+    OMPMatrix< Atom > C( nrows, ncols, 0 );
+
+    if ( nrows == 0 ) return C;
+    if ( ncols == 0 ) return C;
+
+    OMPMatrix3D< Atom > A3d = OMPBroadcastMatrix< Atom >()( A );
+    OMPMatrix3D< Atom > B3d = OMPBroadcastMatrix< Atom >()( B );
+
+#pragma omp parallel shared( nrows, ncols, A3d, B3d, C )
+    {
+#pragma omp parallel for
+	for ( size_t i = 0; i < nrows; ++i )
+	    {
+		for ( size_t j = 0; j < ncols; ++j )
+		    {
+			for ( size_t k = 0; k < nrows; ++k )
+			    {
+				C[i][j] += A3d[k][i][k] * B3d[k][k][j];
+			    }
+		    }
+	    }
+    }
+
+    return C;
 }
 
 /* here's the prefix algorithm */
@@ -443,8 +460,8 @@ public:
     void printOn( std::ostream& os ) const
     {
 	os << "{"
-	   << "@rand: " << (void*)_rand
-	   << ", @srand: " << (void*)_srand
+	   // << "@rand: " << (void*)_rand
+	   // << ", @srand: " << (void*)_srand
 	   << ", max: " << _max
 	   << "}";
     }
@@ -538,16 +555,17 @@ int main(void)
     OMPPrefixSum< int > ps;
     std::cout << "result of prefix sum: " << ps( vec ) << std::endl;
 
-    OMPMatrixInt matrix(8);
-    OMPMatrixInt matrix2(8);
+    OMPMatrixInt A(8);
+    OMPMatrixInt B(8, 1);
     OMPRngMatrix< int > rngmatrix( rng );
 
     rng.reseed( 42 );
-    rngmatrix( matrix, 2, 0, 2 );
+    rngmatrix( A );
 
-    OMPMatrix< int > matrix3 = matrix * matrix2;
+    OMPMatrix< int > C = A * B;
+    std::cout << C << std::endl;
 
-    OMPMatrix3D< int > matrix3D( 10, matrix );
+    OMPMatrix3D< int > matrix3D( 10, C );
     std::cout << matrix3D << std::endl;
 
     return 0;
