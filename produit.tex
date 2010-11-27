@@ -12,27 +12,27 @@ En respectant le modèle EREW, les matrices $A$ et $B \in K_{n*n}$ sont copiées
 L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusion qui prend comme donnée en entrée une matrice $M \in K_{n*n}$ et retourne un cube $M' \in K_{n*n*n}$ . Elle est exprimée en 2 étapes. La première consiste à affecter, en utilisant $O(n^2)$ processeurs, chaque point de la matrice dans la première dimension du cube. La deuxième effectue la copie en diffusion\footnote{Hot potato routing : \url{http://en.wikipedia.org/wiki/Hot_potato_routing}} de chaque point de la matrice situé à la première dimension du cube vers les autres dimensions du cube en utilisant $O(\log{n})$ processeurs et pour une matrice entière en $O(n^2 * \log{n})$.
 
 \incmargin{1em}
-\restylealgo{boxed}
-\begin{algorithm}
+\begin{algorithm}[here]
+  \dontprintsemicolon
   \label{diffusion}
   \Donnees{$M \in K_{n*n}, n \in N$}
   \Res{$M' \in K_{n*n*n}$}
   \Deb{
-    \textit{parallèle}
+    \textit{parallèle}\;
     \Pour{$i\leftarrow 0$ \KwA $n$}{
-      \textit{parallèle}
+      \textit{parallèle}\;
       \Pour{$j\leftarrow 0$ \KwA $n$}{
         $m'(i,j,0)\leftarrow m(i,j)$
       }
     }
 
-    \textit{parallèle}
+    \textit{parallèle}\;
     \Pour{$s\leftarrow 0$ \KwA $\log_2{n}$}{
-      \textit{parallèle}
+      \textit{parallèle}\;
       \Pour{$h\leftarrow 0$ \KwA $s^2$}{
-        \textit{parallèle}
+        \textit{parallèle}\;
         \Pour{$i\leftarrow 0$ \KwA $n$}{
-          \textit{parallèle}
+          \textit{parallèle}\;
           \Pour{$j\leftarrow 0$ \KwA $n$}{
             $m'(i,j,2^s + h)\leftarrow m'(i,j,h)$
           }
@@ -42,6 +42,7 @@ L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusio
   }
   \caption{Copie de matrice en diffusion}
 \end{algorithm}
+\decmargin{1em}
 
 \subsubsection{Le produit}
 
@@ -50,15 +51,15 @@ Toujours en respectant le modèle EREW, le produit matriciel prend en paramètre
 L'algorithme \ref{produit} présente le pseudo-code de la fonction de produit matriciel qui prend comme donnée en entrée les cubes $A$ et $B \in K_{n*n*n}$ et retourne une matrice $C \in K_{n*n}$. L'affectation des valeurs dans la matrice $C$ se fait en $O(n^2)$ et le produit de $c_{ij}$ se fait en $O(n)$.
 
 \incmargin{1em}
-\restylealgo{boxed}
-\begin{algorithm}
+\begin{algorithm}[here]
+  \dontprintsemicolon
   \label{produit}
   \Donnees{$A,B \in K_{n*n*n}, n \in N$}
   \Res{$C \in K_{n*n}$}
   \Deb{
-    \textit{parallèle}
+    \textit{parallèle}\;
     \Pour{$i\leftarrow 0$ \KwA $n$}{
-      \textit{parallèle}
+      \textit{parallèle}\;
       \Pour{$j\leftarrow 0$ \KwA $n$}{
         $c(i,j)\leftarrow \sum_{k=0}^n a(i,k,p) * b(k,j,p)$
       }
@@ -66,6 +67,7 @@ L'algorithme \ref{produit} présente le pseudo-code de la fonction de produit ma
   }
   \caption{Produit matriciel}
 \end{algorithm}
+\decmargin{1em}
 
 \subsubsection{L'implémentation}
 
@@ -74,18 +76,16 @@ Après avoir décrit la fonction de diffusion et le produit matriciel respectant
 L'algorithme \ref{implementation} décrit l'implémentation.
 
 \incmargin{1em}
-\restylealgo{boxed}
-%\linesnumbered
-\begin{algorithm}
+\begin{algorithm}[here]
+  \dontprintsemicolon
   \label{implementation}
   \Donnees{$A,B \in K_{n*n}, n \in N$}
   \Res{$C \in K_{n*n}$}
   \Deb{
-    $A'\leftarrow diffusion(A,n)$
-
-    $B'\leftarrow diffusion(B,n)$
-
-    $C\leftarrow produit(A',B')$
+    $A'\leftarrow diffusion(A,n)$\;
+    $B'\leftarrow diffusion(B,n)$\;
+    $C\leftarrow produit(A',B')$\;
   }
   \caption{Implémentation du produit matriciel}
 \end{algorithm}
+\decmargin{1em}

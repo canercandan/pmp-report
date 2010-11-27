@@ -1,0 +1,69 @@
+\section{Découpage d'un tableau binaire}
+
+\subsection{Enoncé}
+
+\textit{Découpage d'un tableau : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme EREW de complexit $O(\log{n})$ utilisant $O(n)$ processeurs pour ranger tous les éléments $1$ à la droite du tableau tout en maintenant leur ordre relatif (propriété de stabilité des éléments).}
+
+\textit{Hint : effectuer un calcul de prefixe pour déterminer quel devrait être la position de chaque élément.}
+
+\subsection{Solution}
+
+Notre tableau étant binaire, contenant que des $0$ et $1$, il devient facile de compter le nombre de $1$ en sommant toutes les valeurs du tableau pour ensuite déterminer à quel index placer les $0$ et $1$.
+
+Toute fois pour respecter l'énoncé et avoir une complexité en $O(\log{n})$, nous allons devoir utiliser la fonction calculant la somme des prefixes.
+
+\subsubsection{Déterminer l'index}
+
+L'algorithme \ref{index} permet de déterminer l'index qui consituera la frontière entre les $0$ et $1$ dans le tableau. Pour cela il prend en paramètre le tableau binaire $B \in K_n$ ainsi que la taille du tableau $n \in N$.
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{index}
+  \Donnees{$B \in K_n, n \in N$}
+  \Res{$i \in N$}
+  \Deb{
+    $i\leftarrow {n - calcul\_somme\_prefixe(B)}$
+  }
+  \caption{Trouver l'index}
+\end{algorithm}
+
+\subsubsection{Créer le tableau binaire}
+
+L'algorithme \ref{creer_tableau_binaire} prend en paramètre l'index et la taille et crée un tableau binaire trié en fonction de l'index, $0$ à gauche et $1$ à droite.
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{creer_tableau_binaire}
+  \Donnees{$i,n \in N$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    \textit{parallèle}\;
+    \Pour{$j\leftarrow 0$ \KwA $i$}{
+      $B'(i)\leftarrow 0$
+    }
+    \textit{parallèle}\;
+    \Pour{$j\leftarrow i$ \KwA $n$}{
+      $B'(i)\leftarrow 1$
+    }
+  }
+  \caption{Création du tableau binaire trié}
+\end{algorithm}
+
+\subsubsection{Implémentation}
+
+L'algorithme \ref{decoupage} illustre la solution.
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{decoupage}
+  \Donnees{$B \in K_n$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    $i\leftarrow trouver\_index(B)$\;
+    $B'\leftarrow creer\_tableau\_binaire(i)$\;
+  }
+  \caption{Découpage d’un tableau binaire}
+\end{algorithm}

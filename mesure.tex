@@ -1,0 +1,118 @@
+\section{Mesure de performance}
+
+Je profite de ce rapport pour parler d'un travail qui m'a été demandé en entreprise. Nous utilisons le framework EO\footnote{Evolving Object, \url{http://eodev.sf.net}} pour développer nos algorithmes évolutionnaires\footnote{Algorithme évolutionnaire : \url{http://fr.wikipedia.org/wiki/Algorithme_evolutionnaire}}. Le sujet consistait à implémenter, au framework EO, un parallèlisme à mémoire partagée en utilisant OpenMP.
+
+\subsection{Préambule}
+
+Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individus aussi appel échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.
+
+\subsection{Identifier les ressources les plus utilisées}
+
+Un test de profiling a été executé afin d'identifier les ressources les plus utilisées dans le framework EO. Le test nous a permi d'identifier une fonction qui est utilisée par une grande majorité des opérateurs\footnote{Opérateurs de sélection et variation} EO. Il s'agit de la fonction ``apply''. Elle prend en paramètres une population d'individus et un opérateur. Cette fonction va itérer sur tous les individus de la population et appliquer l'opérateur. Il peut être intéressant d'optimiser cette fonction. Nous allons nous limiter à transformer le code sequentiel en parallèle.
+
+\subsection{Pseudo-code de la fonction apply}
+
+L'algorithme \ref{apply} prend en paramètre une population ainsi qu'un opérateur à appliquer à chaque individu.
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{apply}
+  \Donnees{$P \in K_n, F \in Operateur$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    \Pour{$i\leftarrow 0$ \KwA $n$}{
+      $F(P(i))$
+    }
+  }
+  \caption{La fonction apply}
+\end{algorithm}
+
+\subsection{La fonction en parallèle}
+
+L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en utilisant le modèle PRAM CREW\footnote{Concurantial Read Exclusive Write} et $O(n)$ processeurs pour parcourir tous les individus de la population.
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{omp_apply}
+  \Donnees{$P \in K_n, F \in Operateur$}
+  \Res{$B' \in K_n$}
+  \Deb{
+    \textit{parallèle}\;
+    \Pour{$i\leftarrow 0$ \KwA $n$}{
+      $F(P(i))$
+    }
+  }
+  \caption{La fonction omp_apply}
+\end{algorithm}
+
+\subsection{Speed-up}
+
+Après avoir crée la fonction alternative employant le parallèlisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
+
+L'équation suivante présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{speedup}.
+
+$$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
+
+Une description des paramètres est disponible dans la figure \ref{fig:description_parametres}.
+
+\begin{figure}[here]
+  \centering
+  \begin{tabular}{ | l | p{7cm} |}
+    \hline
+    \textbf{Paramètres} & \textbf{Description}\\\hline
+    $n$ & le nombre de processus\\\hline
+    $p$ & la taille minimum de la population\\\hline
+    $P$ & la taille maximum de la population\\\hline
+    $popStep$ & le pas d'iteration de la population\\\hline
+    $d$ & la taille minimum de la dimension\\\hline
+    $D$ & la taille maximum de la dimension\\\hline
+    $dimStep$ & le pas d'iteration de la dimension\\\hline
+    $r$ & le nombre d'exécution pour chaque combinaison de $p$ et $d$\\\hline
+  \end{tabular}
+  \caption{Déscription des paramètres utilisés}
+  \label{fig:description_parametres}
+\end{figure}
+
+\subsection{Mesures}
+
+En prenant en compte les paramètres décrits précédement, nous allons lancer les tests sur deux architectures matérielles différentes.\\
+
+Les jeux de paramètres sont décrits dans la figure \ref{fig:jeux_parametres}.
+
+\begin{figure}[here]
+  \centering
+  \begin{tabular}{ | l | p{7cm} |}
+    \hline
+    \textbf{Paramètres} & \textbf{Valeurs}\\\hline
+    $n$ & en fonction du nombre de coeurs disponible\\\hline
+    $p$ & 1\\\hline
+    $P$ & 1000\\\hline
+    $popStep$ & 100\\\hline
+    $d$ & 1\\\hline
+    $D$ & 1000\\\hline
+    $dimStep$ & 100\\\hline
+    $r$ & 100\\\hline
+  \end{tabular}
+  \caption{Jeux de paramètres utilisés}
+  \label{fig:jeux_parametres}
+\end{figure}
+
+\subsubsection{Graphique}
+
+Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphique\footnote{Utilisation de matplotlib en python pour générer des boites a moustache}, avec les données produits par les tests.
+
+\subsubsection{Double coeurs}
+
+Pour ce premier test, un ordinateur personnel équipé de 2 coeurs\footnote{Intel Centrino vPro cadencé à 2.40GHz} a été utilisé.
+
+\subsubsection{8 coeurs}
+
+Pour ce deuxième test, un serveur équipé d'un processeur i7 utilisant l'hyperthreading\footnote{Hyperthreading : \url{http://en.wikipedia.org/wiki/hyperthreading}} permettant d'avoir 8 coeurs virtuel au lieu de 4, a été utilisé.
+
+\subsection{Dynamicité}
+
+\subsection{Optimisation du compilateur}
+
+\subsubsection{Auto paralleliseur}

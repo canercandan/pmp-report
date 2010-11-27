@@ -1,7 +1,7 @@
 \documentclass[oneside,11pt]{article}
 \usepackage[algo,uml,french,url]{my_package}
 
-\title{Parallelisation \& modèles\\de programmation}
+\title{Parallélisation \& modèles\\de programmation}
 
 \begin{document}
 \begin{empfile}
@@ -15,179 +15,15 @@ input metauml;
 \tableofcontents
 
 \newpage
-
 \input{produit}
-
 \newpage
-
-\section{Découpage d'un tableau binaire}
-
-\subsection{Enoncé}
-
-\textit{Découpage d'un tableau : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme EREW de complexit $O(\log{n})$ utilisant $O(n)$ processeurs pour ranger tous les éléments $1$ à la droite du tableau tout en maintenant leur ordre relatif (propriété de stabilité des éléments).}
-
-\textit{Hint : effectuer un calcul de prefixe pour déterminer quel devrait être la position de chaque élément.}
-
-\subsection{Solution}
-
-Notre tableau étant binaire, contenant que des $0$ et $1$, il devient facile de compter le nombre de $1$ en sommant toutes les valeurs du tableau pour ensuite déterminer à quel index placer les $0$ et $1$.
-
-Toute fois pour respecter l'énoncé et avoir une complexité en $O(\log{n})$, nous allons devoir utiliser la fonction calculant la somme des prefixes.
-
-\subsubsection{Déterminer l'index}
-
-L'algorithme \ref{index} permet de déterminer l'index qui consituera la frontière entre les $0$ et $1$ dans le tableau. Pour cela il prend en paramètre le tableau binaire $B \in K_n$ ainsi que la taille du tableau $n \in N$.
-
-\incmargin{1em}
-\restylealgo{boxed}
-%\linesnumbered
-\begin{algorithm}
-  \label{index}
-  \Donnees{$B \in K_n, n \in N$}
-  \Res{$i \in N$}
-  \Deb{
-    $i\leftarrow {n - calcul\_somme\_prefixe(B)}$
-  }
-  \caption{Trouver l'index}
-\end{algorithm}
-
-\subsubsection{Créer le tableau binaire}
-
-L'algorithme \ref{creer_tableau_binaire} prend en paramètre l'index et la taille et crée un tableau binaire trié en fonction de l'index, $0$ à gauche et $1$ à droite.
-
-\incmargin{1em}
-\restylealgo{boxed}
-%\linesnumbered
-\begin{algorithm}
-  \label{creer_tableau_binaire}
-  \Donnees{$i,n \in N$}
-  \Res{$B' \in K_n$}
-  \Deb{
-    \textit{parallèle}
-    \Pour{$j\leftarrow 0$ \KwA $i$}{
-      $B'(i)\leftarrow 0$
-    }
-    \textit{parallèle}
-    \Pour{$j\leftarrow i$ \KwA $n$}{
-      $B'(i)\leftarrow 1$
-    }
-  }
-  \caption{Création du tableau binaire trié}
-\end{algorithm}
-
-\subsubsection{Implémentation}
-
-L’algorithme \ref{decoupage} illustre la solution.
-
-\incmargin{1em}
-\restylealgo{boxed}
-\begin{algorithm}
-  \label{decoupage}
-  \Donnees{$B \in K_n$}
-  \Res{$B' \in K_n$}
-  \Deb{
-    $i\leftarrow trouver\_index(B)$
-
-    $B'\leftarrow creer\_tableau\_binaire(i)$
-  }
-  \caption{Découpage d’un tableau binaire}
-\end{algorithm}
-
-
-%TODO
-\section{Premier élément non-nul}
-\subsection{Enoncé}
-\textit{Premier élément non-nul : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme CRCW de complexit $O(1)$ qui utilise $O(n)$ processeurs.}
-
+\input{decoupage}
+% \newpage
+% \input{premier}
 \newpage
-
-\section{Design}
-
-Tous les exercices ont été developpés en C++ en utilisant le paradigme de programmation objet et le design qui suit a été élaboré pour regrouper les différents composants de calculs. Néanmoins une recherche a été effectué pour determiner les limites de OpenMP et C++. Il semblerait que les conteneurs fournit par la STL\footnote{Standard Template Library : \url{http://www.sgi.com/tech/stl/}} ne soient pas threadsafe\footnote{On dit qu’un programme ou qu'une portion de code est thread-safe s'il fonctionne correctement durant une exécution simultanée par plusieurs threads (processus légers). \url{http://fr.wikipedia.org/wiki/Threadsafe}}. Une étude\footnote{C++ and OpenMP : \url{http://www.compunity.org/events/pastevents/parco07/parco_cpp_openmp.pdf}} donne une liste non-exaustive des précautions à prendre lors de l’utilisation de OpenMP en C++. Cependant la version OpenMP 3.0 apporte des concepts nouveaux permettant l’utilisation notemment des iterateurs. On peut ainsi, par exemple, s’affranchir de simple indexeur de tableau et étendre la parallelisation sur des listes chainées.
-
-\subsection{Diagramme de classes}
-
-Deux grandes familles d'opérations coexistent. Les opérations de calcul à paramètre unique ``OMPComputeUnary'' et celles à deux paramètres ``OMPComputeBinary''. Tous deux renvoient un résultat. Elles sont préfixées de ``OMP'' pour OpenMP\footnote{Open Multi-Processing : http://openmp.org/}. Le calcul de somme des prefixes prenant un seul paramètre en entrée ``OMPVector'' et renvoyant un ``Atom'', cette classe se situe dans la famille ``OMPComputeUnary''. Le produit matriciel se situe, quant à lui, dans la famille “OMPComputeBinary”, cette classe prend deux paramètres ``OMPMatrix'' et retourne le même type. On peut imaginer d'autres opérations comme, par exemple, un produit vectoriel.
-
-\subsection{Surcharge d'opérateur}
-
-Compte tenu des possibilités offertes par le langage C++, comme la surcharge des opérateurs, l'opérateur $*$ se voit ainsi surchargé dans la classe ``OMPMatrix'' afin d'appeler implicitement la classe ``OMPMatrixProduct'' pour le calcul du produit matriciel. Ainsi en écrivant le code $C = A * B$ ceci revient à écrire $C = OMPMatrixProduct()(A, B)$.
-
+\input{design}
 \newpage
-
-\section{Mesure de performance}
-
-Je profite de ce rapport pour parler d'un travail qui m'a été demandé en entreprise. Nous utilisons le framework EO\footnote{Evolving Object, \url{http://eodev.sf.net}} pour développer nos algorithmes évolutionnaires\footnote{Algorithme évolutionnaire : \url{http://fr.wikipedia.org/wiki/Algorithme_evolutionnaire}}. Le sujet consistait à implémenter, au framework EO, un parallèlisme à mémoire partagée en utilisant OpenMP.
-
-\subsection{Préambule}
-
-Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individus aussi appel échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.
-
-\subsection{Identifier les ressources les plus utilisées}
-
-Un test de profiling a été executé afin d'identifier les ressources les plus utilisées dans le framework EO. Le test nous a permi d'identifier une fonction qui est utilisée par une grande majorité des opérateurs\footnote{Opérateurs de sélection et variation} EO. Il s'agit de la fonction ``apply''. Elle prend en paramètres une population d'individus et un opérateur. Cette fonction va itérer sur tous les individus de la population et appliquer l'opérateur. Il peut être intéressant d'optimiser cette fonction. Nous allons nous limiter à transformer le code sequentiel en parallèle.
-
-\subsection{Pseudo-code de la fonction apply}
-
-L'algorithme \ref{apply} prend en paramètre une population ainsi qu'un opérateur à appliquer à chaque individu.
-
-\subsection{La fonction en parallèle}
-
-L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en utilisant le modèle PRAM CREW\footnote{Concurantial Read Exclusive Write} et $O(n)$ processeurs pour parcourir tous les individus de la population.
-
-\subsection{Speed-up}
-
-Après avoir crée la fonction alternative employant le parallèlisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
-
-L'équation suivante présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{speedup}.
-
-$$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
-
-Nous considérons les paramètres suivants :\\
-$n$ : le nombre de processus\\
-$p$ : la taille minimum de la population\\
-$P$ : la taille maximum de la population\\
-$popStep$ : le pas d'iteration de la population\\
-$d$ : la taille minimum de la dimension\\
-$D$ : la taille maximum de la dimension\\
-$dimStep$ : le pas d'iteration de la dimension\\
-$r$ : le nombre d'exécution pour chaque combinaison de p et d\\
-
-\subsection{Mesures}
-
-En prenant en compte les paramètres décrits précédement, nous allons lancer les tests sur deux architectures matérielles différentes.\\
-
-Les jeux de paramètres suivants ont été utilisés :
-
-\begin{description}
-\item[$n$] \hfill \\
-en fonction du nombre de coeurs disponible
-\item[$p$] 1
-\item[$P$] 1000
-\item[$popStep$] 100
-\item[$d$] 1
-\item[$D$] 1000
-\item[$dimStep$] 100
-\item[$r$] 100
-\end{description}
-
-\subsubsection{Graphique}
-
-Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphique\footnote{Utilisation de matplotlib en python pour générer des boites a moustache}, avec les données produits par les tests.
-
-\subsubsection{Double coeurs}
-
-Pour ce premier test, un ordinateur personnel équipé de 2 coeurs\footnote{Intel Centrino vPro cadencé à 2.40GHz} a été utilisé.\cite{knuth, lamport}
-
-\subsubsection{8 coeurs}
-
-Pour ce deuxième test, un serveur équipé d'un processeur i7 utilisant l'hyperthreading\footnote{Hyperthreading : \url{http://en.wikipedia.org/wiki/hyperthreading}} permettant d'avoir 8 coeurs virtuel au lieu de 4, a été utilisé.
-
-\subsection{Dynamicité}
-
-\subsection{Optimisation du compilateur}
-
-\subsubsection{Auto paralleliseur}
+\input{mesure}
 
 % \begin{center}
 % \begin{emp}[classdiag](20, 20)
@@ -210,7 +46,7 @@ Pour ce deuxième test, un serveur équipé d'un processeur i7 utilisant l'hyper
 
 \end{empfile}
 
-\bibliographystyle{plain}
-\bibliography{references}
+% \bibliographystyle{plain}
+% \bibliography{references}
 
 \end{document}
