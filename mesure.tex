@@ -27,6 +27,7 @@ L'algorithme \ref{apply} prend en paramètre une population ainsi qu'un opérate
   }
   \caption{La fonction apply}
 \end{algorithm}
+\decmargin{1em}
 
 \subsection{La fonction en parallèle}
 
@@ -44,16 +45,49 @@ L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en u
       $F(P(i))$
     }
   }
-  \caption{La fonction omp_apply}
+  \caption{La fonction omp\_apply}
 \end{algorithm}
+\decmargin{1em}
 
 \subsection{Speed-up}
 
 Après avoir crée la fonction alternative employant le parallèlisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
 
-L'équation suivante présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{speedup}.
+L'équation \ref{fig:mesure_speedup} présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{speedup}.
 
+\begin{figure}[here]
+\centering
 $$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
+\caption{Mesure du Speedup}
+\label{fig:mesure_speedup}
+\end{figure}
+
+\incmargin{1em}
+\begin{algorithm}[here]
+  \dontprintsemicolon
+  \label{speedup}
+  \Donnees{$p, P, popStep, d, D, dimStep, r \in N$}
+  \Deb{
+    \Pour{$k\leftarrow p$ \KwA $P$}{
+      \Pour{$l\leftarrow d$ \KwA $D$}{
+        \Pour{$m\leftarrow 0$ \KwA $r$}{
+          $T_s\leftarrow 0$\;
+          $T_p\leftarrow 0$\;
+          \Deb{
+            $t_1\leftarrow omp\_get\_wtime()$\;
+            ... code sequentiel avec $k$ et $l$ exécuté $m$ fois ...\;
+            apply( ... )\;
+            $t_2\leftarrow omp\_get\_wtime()$\;
+            $T_s\leftarrow t_2 - t_1$\;
+          }
+          $F(P(i))$
+        }
+      }
+    }
+  }
+  \caption{La fonction omp\_apply}
+\end{algorithm}
+\decmargin{1em}
 
 Une description des paramètres est disponible dans la figure \ref{fig:description_parametres}.
 
@@ -62,7 +96,6 @@ Une description des paramètres est disponible dans la figure \ref{fig:descripti
   \begin{tabular}{ | l | p{7cm} |}
     \hline
     \textbf{Paramètres} & \textbf{Description}\\\hline
-    $n$ & le nombre de processus\\\hline
     $p$ & la taille minimum de la population\\\hline
     $P$ & la taille maximum de la population\\\hline
     $popStep$ & le pas d'iteration de la population\\\hline
@@ -71,7 +104,7 @@ Une description des paramètres est disponible dans la figure \ref{fig:descripti
     $dimStep$ & le pas d'iteration de la dimension\\\hline
     $r$ & le nombre d'exécution pour chaque combinaison de $p$ et $d$\\\hline
   \end{tabular}
-  \caption{Déscription des paramètres utilisés}
+  \caption{Description des paramètres utilisés}
   \label{fig:description_parametres}
 \end{figure}
 
@@ -83,10 +116,9 @@ Les jeux de paramètres sont décrits dans la figure \ref{fig:jeux_parametres}.
 
 \begin{figure}[here]
   \centering
-  \begin{tabular}{ | l | p{7cm} |}
+  \begin{tabular}{ | l | r |}
     \hline
     \textbf{Paramètres} & \textbf{Valeurs}\\\hline
-    $n$ & en fonction du nombre de coeurs disponible\\\hline
     $p$ & 1\\\hline
     $P$ & 1000\\\hline
     $popStep$ & 100\\\hline
