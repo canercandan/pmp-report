@@ -390,9 +390,7 @@ public:
 #pragma omp parallel for shared(subsize)
 		for ( size_t k = 1; k <= subsize; k++ )
 		    {
-			B[h][k] = _op
-			    ( B[h - 1][2 * k - 1],
-			      B[h - 1][2 * k] );
+			B[h][k] = _op( B[h - 1][2 * k - 1], B[h - 1][2 * k] );
 		    }
 	    }
 

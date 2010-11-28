@@ -19,13 +19,13 @@ L'algorithme \ref{index} permet de déterminer l'index qui consituera la fronti�
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{index}
   \Donnees{$B \in K_n, n \in N$}
   \Res{$i \in N$}
   \Deb{
     $i\leftarrow {n - calcul\_somme\_prefixe(B)}$
   }
   \caption{Trouver l'index}
+  \label{index}
 \end{algorithm}
 \decmargin{1em}
 
@@ -36,7 +36,6 @@ L'algorithme \ref{creer_tableau_binaire} prend en paramètre l'index et la taill
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{creer_tableau_binaire}
   \Donnees{$i,n \in N$}
   \Res{$B' \in K_n$}
   \Deb{
@@ -50,6 +49,7 @@ L'algorithme \ref{creer_tableau_binaire} prend en paramètre l'index et la taill
     }
   }
   \caption{Création du tableau binaire trié}
+  \label{creer_tableau_binaire}
 \end{algorithm}
 \decmargin{1em}
 
@@ -60,7 +60,6 @@ L'algorithme \ref{decoupage} illustre la solution.
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{decoupage}
   \Donnees{$B \in K_n$}
   \Res{$B' \in K_n$}
   \Deb{
@@ -68,5 +67,6 @@ L'algorithme \ref{decoupage} illustre la solution.
     $B'\leftarrow creer\_tableau\_binaire(i)$\;
   }
   \caption{Découpage d’un tableau binaire}
+  \label{decoupage}
 \end{algorithm}
 \decmargin{1em}

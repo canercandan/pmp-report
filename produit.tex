@@ -14,7 +14,6 @@ L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusio
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{diffusion}
   \Donnees{$M \in K_{n*n}, n \in N$}
   \Res{$M' \in K_{n*n*n}$}
   \Deb{
@@ -41,6 +40,7 @@ L'algorithme \ref{diffusion} présente le pseudo-code de la fonction de diffusio
     }
   }
   \caption{Copie de matrice en diffusion}
+  \label{diffusion}
 \end{algorithm}
 \decmargin{1em}
 
@@ -53,7 +53,6 @@ L'algorithme \ref{produit} présente le pseudo-code de la fonction de produit ma
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{produit}
   \Donnees{$A,B \in K_{n*n*n}, n \in N$}
   \Res{$C \in K_{n*n}$}
   \Deb{
@@ -66,6 +65,7 @@ L'algorithme \ref{produit} présente le pseudo-code de la fonction de produit ma
     }
   }
   \caption{Produit matriciel}
+  \label{produit}
 \end{algorithm}
 \decmargin{1em}
 
@@ -78,7 +78,6 @@ L'algorithme \ref{implementation} décrit l'implémentation.
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{implementation}
   \Donnees{$A,B \in K_{n*n}, n \in N$}
   \Res{$C \in K_{n*n}$}
   \Deb{
@@ -87,5 +86,6 @@ L'algorithme \ref{implementation} décrit l'implémentation.
     $C\leftarrow produit(A',B')$\;
   }
   \caption{Implémentation du produit matriciel}
+  \label{implementation}
 \end{algorithm}
 \decmargin{1em}

@@ -17,14 +17,6 @@
 \RequirePackage[utf8]{inputenc}
 \fi
 
-\if@algo
-\if@french
-\RequirePackage[boxed,vlined,linesnumbered,french]{algorithm2e}
-\else
-\RequirePackage[boxed,vlined,linesnumbered]{algorithm2e}
-\fi
-\fi
-
 \RequirePackage{longtable,geometry}
 
 \if@url
@@ -32,6 +24,14 @@
 \RequirePackage[pdftex]{hyperref}
 \fi
 \RequirePackage{url}
+\fi
+
+\if@algo
+\if@french
+\RequirePackage[boxed,vlined,linesnumbered,french]{algorithm2e}
+\else
+\RequirePackage[boxed,vlined,linesnumbered]{algorithm2e}
+\fi
 \fi
 
 \if@uml
@@ -45,10 +45,10 @@
 \fi
 \fi
 
+\usepackage{subfig}
+
 % \RequirePackage{pstricks}
 % \RequirePackage{pst-gr3d}
-
-\usepackage{subfig}
 
 \pagestyle{headings}
 \geometry{dvips,a4paper,margin=1.0in}

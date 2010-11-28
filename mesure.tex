@@ -19,7 +19,6 @@ L'algorithme \ref{apply} prend en paramètre une population ainsi qu'un opérate
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{apply}
   \Donnees{$P \in K_n, F \in Operateur$}
   \Res{$B' \in K_n$}
   \Deb{
@@ -28,6 +27,7 @@ L'algorithme \ref{apply} prend en paramètre une population ainsi qu'un opérate
     }
   }
   \caption{La fonction apply}
+  \label{apply}
 \end{algorithm}
 \decmargin{1em}
 
@@ -38,7 +38,6 @@ L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en u
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{omp_apply}
   \Donnees{$P \in K_n, F \in Operateur$}
   \Res{$B' \in K_n$}
   \Deb{
@@ -48,6 +47,7 @@ L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en u
     }
   }
   \caption{La fonction omp\_apply}
+  \label{omp_apply}
 \end{algorithm}
 \decmargin{1em}
 
@@ -67,7 +67,6 @@ $$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{algo_speedup}
   \Donnees{$p, P, popStep, d, D, dimStep, r \in N$}
   \Deb{
     \Pour{$k\leftarrow p$ \KwA $P$}{
@@ -95,6 +94,7 @@ $$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
     }
   }
   \caption{La fonction de mesure du speedup}
+  \label{algo_speedup}
 \end{algorithm}
 \decmargin{1em}
 
@@ -133,7 +133,7 @@ En prenant en compte les paramètres décrits précédement, nous allons lancer 
   \label{fig:architectures}
 \end{figure}
 
-Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphiques\footnote{Utilisation de matplotlib en python pour générer des boites a moustache}, avec les données produits par les tests.
+Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphiques\footnote{Utilisation de matplotlib en python pour générer des boites à moustache}, avec les données produits par les tests.
 
 \subsubsection{Fonctions objectifs}
 
@@ -145,7 +145,7 @@ Il est important de simuler toutes les compléxités de problèmes que l'on peut
     \hline
     \textbf{Fonction objectifs} & \textbf{Complexité en temps} & \textbf{Algorithme}\\\hline
     L'algorithme du Sphere & $O(1)$ & $Sphere = \sum_{k=0}^n individu_k$\\\hline
-    Problème à temps variable quelquonque & $O(n)$ & usleep($U(0,1) * 10$)\\\hline
+    Problème à temps variable quelconque & $O(n)$ & usleep($U(0,1) * 10$)\\\hline
   \end{tabular}
   \caption{Fonctions objectifs}
   \label{fig:objectifs}
@@ -166,35 +166,124 @@ Pour faciliter et automatiser les tests, une liste de mesures a été élaboré 
     4 & mesure pour $D \in [1, 101[$ avec $P = 1000$\\\hline
     5 & mesure pour $D \in [1, 1001[$ avec $dimStep = 10$ et $P = 1000$\\\hline
   \end{tabular}
-  \caption{Fonctions objectifs}
+  \caption{Liste des mesures}
   \label{fig:liste_mesures}
 \end{figure}
 
 \subsubsection{Dynamicité}
 
-Parmi les optimisations possibles en OpenMP, il existe deux types de planification, la planification statique, utilisé par défaut, divise le nombre de taches à traiter à tous les processus disponibles et la planification dynamique maintien une fil de taches traitée au fur et à mesure par les processus disponibles. Nous evaluons la dynamicité par le rapport entre une mesure de speedup en mode statique et une mesure de speedup en mode dynamique\footnote{Dynamicité : $D_p = \frac{S_p}{S_p^d}$}.
+Parmi les optimisations possibles en OpenMP, il existe deux types de planification, la planification statique, utilisé par défaut, divise le nombre de tâches à traiter à tous les processus disponibles et la planification dynamique maintient une file de tâches traitée au fur et à mesure par les processus disponibles. Nous évaluons la dynamicité par le rapport entre une mesure de speedup en mode statique et une mesure de speedup en mode dynamique\footnote{Dynamicité : $D_p = \frac{S_p}{S_p^d}$}.
 
 \subsubsection{Résultats en $O(1)$}
 
-Le benchmark a été executé dans un premier temps pour le problème du Sphere qui se resoud en temps constant. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrits précédement.
+Le benchmark a été executé dans un premier temps pour le problème du Sphere qui se résoud en temps constant. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédement.\\
 
-% \begin{figure}[here]
-% \centering
-% \subfloat[speedup]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_speedup_p1_pS10_P101_\subfloat[efficacité]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_efficienty_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
-% \subfloat[dynamicité]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
-% \caption{Mesure 1 en $O(1)$}
-% \end{figure}
+Les mesures sont présentées en fonction des processeurs utilisés et disponibles en figure \ref{fig:mesure_1_constant}, \ref{fig:mesure_2_constant}, \ref{fig:mesure_3_constant}, \ref{fig:mesure_4_constant} et \ref{fig:mesure_5_constant}.
 
-% \begin{figure}[here]
-% \centering
-% \includegraphics[scale=0.70]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_efficiency_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}
-% \caption{Mesure de performance sur 2 coeurs pour résoudre un problème en temps constant}
-% \label{fig:measure_2_cores_constant_time}
-% \end{figure}
+% mesure 1 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/1_speedup_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/1_speedup_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+\caption{Mesure 1 en $O(1)$ sur 2 et 8 coeurs}
+\label{fig:mesure_1_constant}
+\end{figure}
 
-% \begin{figure}[here]
-% \centering
-% \includegraphics[scale=0.70]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}
-% \caption{Mesure de performance sur 2 coeurs pour résoudre un problème en temps constant}
-% \label{fig:measure_2_cores_constant_time}
-% \end{figure}
+% mesure 2 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/2_speedup_p1_pS1_P101_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/2_dynamicity_p1_pS1_P101_d1000_dS1_D1000_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/2_speedup_p1_pS1_P101_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/2_dynamicity_p1_pS1_P101_d1000_dS1_D1000_r100_s1.pdf}}
+\caption{Mesure 2 en $O(1)$ sur 2 et 8 coeurs}
+\label{fig:mesure_2_constant}
+\end{figure}
+
+% mesure 3 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/3_speedup_p1_pS10_P1001_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/3_dynamicity_p1_pS10_P1001_d1000_dS1_D1000_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/3_speedup_p1_pS10_P1001_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/3_dynamicity_p1_pS10_P1001_d1000_dS1_D1000_r100_s1.pdf}}
+\caption{Mesure 3 en $O(1)$ sur 2 et 8 coeurs}
+\label{fig:mesure_3_constant}
+\end{figure}
+
+% mesure 4 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/4_speedup_p1000_pS1_P1000_d1_dS1_D101_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/4_dynamicity_p1000_pS1_P1000_d1_dS1_D101_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/4_speedup_p1000_pS1_P1000_d1_dS1_D101_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/4_dynamicity_p1000_pS1_P1000_d1_dS1_D101_r100_s1.pdf}}
+\caption{Mesure 4 en $O(1)$ sur 2 et 8 coeurs}
+\label{fig:mesure_4_constant}
+\end{figure}
+
+% mesure 5 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/5_speedup_p1000_pS1_P1000_d1_dS10_D1001_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n1_no_vartime/5_dynamicity_p1000_pS1_P1000_d1_dS10_D1001_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/5_speedup_p1000_pS1_P1000_d1_dS10_D1001_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n1_no_vartime/5_dynamicity_p1000_pS1_P1000_d1_dS10_D1001_r100_s1.pdf}}
+\caption{Mesure 5 en $O(1)$ sur 2 et 8 coeurs}
+\label{fig:mesure_5_constant}
+\end{figure}
+
+\newpage
+
+\subsubsection{Résultats en $O(n)$}
+
+Dans un second temps, le benchmark est executé pour le problème qui se résoud en temps variable. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédement en figure \ref{fig:liste_mesures}.\\
+
+Il est important d'ajouter que compte tenu de la résolution du problème en $O(n)$ et non plus en fonction de la dimension, celle ci perd de son importance. Ainsi les mesures 1, 4 et 5 ne sont plus nessaire à mesurer. Seules les mesures 2 et 3 seront présentées ci-dessous.\\
+
+Un algorithme séquentiel executé sur un processeur à 8 coeurs en comparaison avec un processeur à 2 coeurs est plus performant sur des petits échantillons. Nous avons donc choisit de définir les bornes des paramètres, décrits en figure \ref{fig:liste_mesures}, comme multiple du nombre de coeurs disponible.\\
+
+Les mesures sont présentées en fonction des processeurs utilisés et disponibles en figure \ref{fig:mesure_2_variable} et \ref{fig:mesure_3_variable}.
+
+% mesure 2 en O(n)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n2/2_variable_speedup_p2_pS2_P202_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n2/2_variable_dynamicity_p2_pS2_P202_d1000_dS1_D1000_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n8_no_consttime/2_variable_speedup_p8_pS8_P808_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n8_no_consttime/2_variable_dynamicity_p8_pS8_P808_d1000_dS1_D1000_r100_s1.pdf}}
+\caption{Mesure 2 en $O(n)$ sur 2 et 8 coeurs}
+\label{fig:mesure_2_variable}
+\end{figure}
+
+% mesure 3 en O(1)
+\begin{figure}[here]
+\centering
+\subfloat[speedup sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n2/3_speedup_p2_pS20_P2002_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 2 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_2_cores_n2/3_dynamicity_p2_pS20_P2002_d1000_dS1_D1000_r100_s1.pdf}}
+\qquad
+\subfloat[speedup sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n8_no_consttime/3_variable_speedup_p8_pS80_P8008_d1000_dS1_D1000_r100_s1.pdf}}
+\subfloat[dynamicité sur 8 coeurs]{\includegraphics[scale=0.25]{openmp_measures_for_8_cores_n8_no_consttime/3_variable_dynamicity_p8_pS80_P8008_d1000_dS1_D1000_r100_s1.pdf}}
+\caption{Mesure 3 en $O(n)$ sur 2 et 8 coeurs}
+\label{fig:mesure_3_variable}
+\end{figure}
+
+\subsubsection{Conclusion}
+
+Pour un processeur à 2 coeurs, selon la complexité du problème utilisée, nous pouvons observer par la mesure du speedup que les ressources sont utilisées au maximum\footnote{cpu-bound} pour de grandes tailles d'échantillon. Les petites tailles d'échantillon restant dominées par une execution sequentielle.\\
+
+Pour un processeur à 8 coeurs, en hyperthreading, notre première observation consiste à montrer les limites de l'hyperthreading, en effet nous utilisons pas plus de 4 coeurs. Et pour rejoindre ce qui a été dit sur 2 coeurs, un plus grand nombre de petites tailles d'échantillon reste dominée par une execution sequentielle.\\
+
+La différence entre les deux complexités de problème s'observe dans la mesure de la dynamicité. En effet pour un problème en $O(1)$, la planification statique en OpenMP permet d'avoir une meilleur efficacité de travail tandis que en $O(n)$, la planification dynamique apporte quelque amélioration.\\
+
+Pour résumé nous avons comparé par nos mesures les 2 types de planification de tâches en OpenMP, les 2 compléxités de problèmes que nous serons ammené à parallèliser et finalement sur 2 types de processeurs différents.\\
+
+Un point que je n'ai pas eu le temps d'éclaircir et que j'invite à regarder est l'utilisation de l'auto parallèlisation intégerer au compilateur GCC\footnote{Automatic Parallelization : \url{http://gcc.gnu.org/wiki/openmp}}. Il s'agit d'un niveau d'optimisation qui consiste à verifier la non dépendance des données dans les boucles et les parallèliser.
