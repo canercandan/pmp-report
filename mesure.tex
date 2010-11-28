@@ -4,7 +4,9 @@ Je profite de ce rapport pour parler d'un travail qui m'a été demandé en entr
 
 \subsection{Préambule}
 
-Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individus aussi appel échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.
+Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individus aussi appelé échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.\\
+
+Le problème est représenté par la fonction objectif qui prend en paramètre un individu (un point dans l'échantillon) et évalue toutes ses dimensions pour en déduire la qualité\footnote{Fitness en anglais}. La qualité est le critère de comparaison d'un point dans son échantillon.
 
 \subsection{Identifier les ressources les plus utilisées}
 
@@ -53,7 +55,7 @@ L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en u
 
 Après avoir crée la fonction alternative employant le parallèlisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
 
-L'équation \ref{fig:mesure_speedup} présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{speedup}.
+L'équation, en figure \ref{fig:mesure_speedup}, présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{algo_speedup}.
 
 \begin{figure}[here]
 \centering
@@ -65,7 +67,7 @@ $$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
 \incmargin{1em}
 \begin{algorithm}[here]
   \dontprintsemicolon
-  \label{speedup}
+  \label{algo_speedup}
   \Donnees{$p, P, popStep, d, D, dimStep, r \in N$}
   \Deb{
     \Pour{$k\leftarrow p$ \KwA $P$}{
@@ -80,12 +82,19 @@ $$Mesure\ du\ Speedup = r \sum^{P,D}_{k=0,l=0} S_{p_{kl}}$$
             $t_2\leftarrow omp\_get\_wtime()$\;
             $T_s\leftarrow t_2 - t_1$\;
           }
-          $F(P(i))$
+          \Deb{
+            $t_1\leftarrow omp\_get\_wtime()$\;
+            ... code parallèle avec $k$ et $l$ exécuté $m$ fois ...\;
+            omp\_apply( ... )\;
+            $t_2\leftarrow omp\_get\_wtime()$\;
+            $T_p\leftarrow t_2 - t_1$\;
+          }
+          ... on conserve le speed-up $\frac{T_s}{T_p}$ pour $k$ et $l$ ...\;
         }
       }
     }
   }
-  \caption{La fonction omp\_apply}
+  \caption{La fonction de mesure du speedup}
 \end{algorithm}
 \decmargin{1em}
 
@@ -97,11 +106,11 @@ Une description des paramètres est disponible dans la figure \ref{fig:descripti
     \hline
     \textbf{Paramètres} & \textbf{Description}\\\hline
     $p$ & la taille minimum de la population\\\hline
-    $P$ & la taille maximum de la population\\\hline
     $popStep$ & le pas d'iteration de la population\\\hline
+    $P$ & la taille maximum de la population\\\hline
     $d$ & la taille minimum de la dimension\\\hline
-    $D$ & la taille maximum de la dimension\\\hline
     $dimStep$ & le pas d'iteration de la dimension\\\hline
+    $D$ & la taille maximum de la dimension\\\hline
     $r$ & le nombre d'exécution pour chaque combinaison de $p$ et $d$\\\hline
   \end{tabular}
   \caption{Description des paramètres utilisés}
@@ -110,41 +119,82 @@ Une description des paramètres est disponible dans la figure \ref{fig:descripti
 
 \subsection{Mesures}
 
-En prenant en compte les paramètres décrits précédement, nous allons lancer les tests sur deux architectures matérielles différentes.\\
-
-Les jeux de paramètres sont décrits dans la figure \ref{fig:jeux_parametres}.
+En prenant en compte les paramètres décrits précédement, nous allons lancer les tests sur deux architectures matérielles différentes présenté en figure \ref{fig:architectures}.\\
 
 \begin{figure}[here]
   \centering
-  \begin{tabular}{ | l | r |}
+  \begin{tabular}{ | l | l | l | l |}
     \hline
-    \textbf{Paramètres} & \textbf{Valeurs}\\\hline
-    $p$ & 1\\\hline
-    $P$ & 1000\\\hline
-    $popStep$ & 100\\\hline
-    $d$ & 1\\\hline
-    $D$ & 1000\\\hline
-    $dimStep$ & 100\\\hline
-    $r$ & 100\\\hline
+    \textbf{Processeur} & \textbf{Nombre de coeurs} & \textbf{Fréquence} & \textbf{Cache L1}\\\hline
+    Intel Centrino vPro & 2 & 2.40GHz & 3072KB\\\hline
+    Intel Core i7 & 8 (hyperthreading\footnote{Hyperthreading : \url{http://en.wikipedia.org/wiki/hyperthreading}}) & 2.67GHz & 8192KB\\\hline
   \end{tabular}
-  \caption{Jeux de paramètres utilisés}
-  \label{fig:jeux_parametres}
+  \caption{Architectures matérielles}
+  \label{fig:architectures}
 \end{figure}
 
-\subsubsection{Graphique}
+Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphiques\footnote{Utilisation de matplotlib en python pour générer des boites a moustache}, avec les données produits par les tests.
 
-Pour visualiser l'évolution du speed-up, nous utilisons un outil de génération de graphique\footnote{Utilisation de matplotlib en python pour générer des boites a moustache}, avec les données produits par les tests.
+\subsubsection{Fonctions objectifs}
 
-\subsubsection{Double coeurs}
+Il est important de simuler toutes les compléxités de problèmes que l'on peut être ammené à résoudre. Pour nos tests, le choix a été orienté vers deux fonctions objectifs de complexité différente présenté en figure \ref{fig:objectifs}.
 
-Pour ce premier test, un ordinateur personnel équipé de 2 coeurs\footnote{Intel Centrino vPro cadencé à 2.40GHz} a été utilisé.
+\begin{figure}[here]
+  \centering
+  \begin{tabular}{ | l | c | l |}
+    \hline
+    \textbf{Fonction objectifs} & \textbf{Complexité en temps} & \textbf{Algorithme}\\\hline
+    L'algorithme du Sphere & $O(1)$ & $Sphere = \sum_{k=0}^n individu_k$\\\hline
+    Problème à temps variable quelquonque & $O(n)$ & usleep($U(0,1) * 10$)\\\hline
+  \end{tabular}
+  \caption{Fonctions objectifs}
+  \label{fig:objectifs}
+\end{figure}
 
-\subsubsection{8 coeurs}
+\subsubsection{Benchmark}
 
-Pour ce deuxième test, un serveur équipé d'un processeur i7 utilisant l'hyperthreading\footnote{Hyperthreading : \url{http://en.wikipedia.org/wiki/hyperthreading}} permettant d'avoir 8 coeurs virtuel au lieu de 4, a été utilisé.
+Pour faciliter et automatiser les tests, une liste de mesures a été élaboré avec les paramètres décrits précédement et un script contenant l'ensemble des tests à executer a été crée. La liste des mesures est présentée en figure \ref{fig:liste_mesures}.
 
-\subsection{Dynamicité}
+\begin{figure}[here]
+  \centering
+  \begin{tabular}{ | c | l | }
+    \hline
+    \textbf{Mesure} & \textbf{Description}\\\hline
+    1 & mesure pour toutes les combinaisons de $P$ et $D$\\\hline
+    2 & mesure pour $P \in [1, 101[$ avec $D = 1000$\\\hline
+    3 & mesure pour $P \in [1, 1001[$ avec $popStep = 10$ et $D = 1000$\\\hline
+    4 & mesure pour $D \in [1, 101[$ avec $P = 1000$\\\hline
+    5 & mesure pour $D \in [1, 1001[$ avec $dimStep = 10$ et $P = 1000$\\\hline
+  \end{tabular}
+  \caption{Fonctions objectifs}
+  \label{fig:liste_mesures}
+\end{figure}
 
-\subsection{Optimisation du compilateur}
+\subsubsection{Dynamicité}
 
-\subsubsection{Auto paralleliseur}
+Parmi les optimisations possibles en OpenMP, il existe deux types de planification, la planification statique, utilisé par défaut, divise le nombre de taches à traiter à tous les processus disponibles et la planification dynamique maintien une fil de taches traitée au fur et à mesure par les processus disponibles. Nous evaluons la dynamicité par le rapport entre une mesure de speedup en mode statique et une mesure de speedup en mode dynamique\footnote{Dynamicité : $D_p = \frac{S_p}{S_p^d}$}.
+
+\subsubsection{Résultats en $O(1)$}
+
+Le benchmark a été executé dans un premier temps pour le problème du Sphere qui se resoud en temps constant. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrits précédement.
+
+% \begin{figure}[here]
+% \centering
+% \subfloat[speedup]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_speedup_p1_pS10_P101_\subfloat[efficacité]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_efficienty_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+% \subfloat[dynamicité]{\includegraphics[scale=0.4]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}}
+% \caption{Mesure 1 en $O(1)$}
+% \end{figure}
+
+% \begin{figure}[here]
+% \centering
+% \includegraphics[scale=0.70]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_efficiency_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}
+% \caption{Mesure de performance sur 2 coeurs pour résoudre un problème en temps constant}
+% \label{fig:measure_2_cores_constant_time}
+% \end{figure}
+
+% \begin{figure}[here]
+% \centering
+% \includegraphics[scale=0.70]{openmp_measures_2010_11_27_23_00_05_470948_for_2_cores_n1_no_vartime/1_dynamicity_p1_pS10_P101_d1_dS10_D101_r100_s1.pdf}
+% \caption{Mesure de performance sur 2 coeurs pour résoudre un problème en temps constant}
+% \label{fig:measure_2_cores_constant_time}
+% \end{figure}

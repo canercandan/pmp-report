@@ -4,7 +4,14 @@ Tous les exercices ont été developpés en C++ en utilisant le paradigme de pro
 
 \subsection{Diagramme de classes}
 
-Deux grandes familles d'opérations coexistent. Les opérations de calcul à paramètre unique ``OMPComputeUnary'' et celles à deux paramètres ``OMPComputeBinary''. Tous deux renvoient un résultat. Elles sont préfixées de ``OMP'' pour OpenMP\footnote{Open Multi-Processing : http://openmp.org/}. Le calcul de somme des prefixes prenant un seul paramètre en entrée ``OMPVector'' et renvoyant un ``Atom'', cette classe se situe dans la famille ``OMPComputeUnary''. Le produit matriciel se situe, quant à lui, dans la famille “OMPComputeBinary”, cette classe prend deux paramètres ``OMPMatrix'' et retourne le même type. On peut imaginer d'autres opérations comme, par exemple, un produit vectoriel.
+\begin{figure}[here]
+\centering
+\includegraphics[scale=0.45]{diagram}
+\caption{Diagramme de classes}
+\label{fig:diagram}
+\end{figure}
+
+Deux grandes familles d'opérations coexistent. Elles sont présentées en figure \ref{fig:diagram}. Les opérations de calcul à paramètre unique ``OMPComputeUnary'' et celles à deux paramètres ``OMPComputeBinary''. Tous deux renvoient un résultat. Elles sont préfixées de ``OMP'' pour OpenMP\footnote{Open Multi-Processing : http://openmp.org/}. Le calcul de somme des prefixes prenant un seul paramètre en entrée ``OMPVector'' et renvoyant un ``Atom'', cette classe se situe dans la famille ``OMPComputeUnary''. Le produit matriciel se situe, quant à lui, dans la famille “OMPComputeBinary”, cette classe prend deux paramètres ``OMPMatrix'' et retourne le même type. On peut imaginer d'autres opérations comme, par exemple, un produit vectoriel.
 
 \subsection{Surcharge d'opérateur}
 
