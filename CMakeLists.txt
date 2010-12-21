@@ -2,26 +2,5 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(pmp)
 
-FIND_PACKAGE(OpenMP REQUIRED)
-
-IF(OPENMP_FOUND)
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_CXX_FLAGS}")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_C_FLAGS}")
-ENDIF()
-
-IF(UNIX)
-  ADD_DEFINITIONS( -Wall -W -Wextra -pedantic )
-  ADD_DEFINITIONS( -O3 )
-  ADD_DEFINITIONS( -g3 )
-ENDIF()
-
-SET(SOURCES
-  example
-  concept
-  )
-
-FOREACH(current ${SOURCES})
-  ADD_EXECUTABLE(${current} ${current}.cpp)
-  ADD_TEST(${current} ${current})
-  #TARGET_LINK_LIBRARIES(${current} m)
-ENDFOREACH()
+ADD_SUBDIRECTORY(report)
+ADD_SUBDIRECTORY(concept)
