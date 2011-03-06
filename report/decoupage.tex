@@ -1,20 +1,20 @@
 \section{Découpage d'un tableau binaire}
 
-\subsection{Enoncé}
+\subsection{Énoncé}
 
-\textit{Découpage d'un tableau : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme EREW de complexit $O(\log{n})$ utilisant $O(n)$ processeurs pour ranger tous les éléments $1$ à la droite du tableau tout en maintenant leur ordre relatif (propriété de stabilité des éléments).}
+\textit{Découpage d'un tableau : Soit $A$ un tableau de longueur $n$ dont les éléments sont soit des $0$ soit des $1$. Concevez un algorithme EREW de complexité $O(\log{n})$ utilisant $O(n)$ processeurs pour ranger tous les éléments $1$ à la droite du tableau tout en maintenant leur ordre relatif (propriété de stabilité des éléments).}
 
-\textit{Hint : effectuer un calcul de prefixe pour déterminer quel devrait être la position de chaque élément.}
+\textit{Hint : effectuer un calcul de préfixe pour déterminer quel devrait être la position de chaque élément.}
 
 \subsection{Solution}
 
 Notre tableau étant binaire, contenant que des $0$ et $1$, il devient facile de compter le nombre de $1$ en sommant toutes les valeurs du tableau pour ensuite déterminer à quel index placer les $0$ et $1$.
 
-Toute fois pour respecter l'énoncé et avoir une complexité en $O(\log{n})$, nous allons devoir utiliser la fonction calculant la somme des prefixes.
+Toute fois pour respecter l'énoncé et avoir une complexité en $O(\log{n})$, nous allons devoir utiliser la fonction calculant la somme des préfixes.
 
 \subsubsection{Déterminer l'index}
 
-L'algorithme \ref{index} permet de déterminer l'index qui consituera la frontière entre les $0$ et $1$ dans le tableau. Pour cela il prend en paramètre le tableau binaire $B \in K_n$ ainsi que la taille du tableau $n \in N$.
+L'algorithme \ref{index} permet de déterminer l'index qui constituera la frontière entre les $0$ et $1$ dans le tableau. Pour cela il prend en paramètre le tableau binaire $B \in K_n$ ainsi que la taille du tableau $n \in N$.
 
 \incmargin{1em}
 \begin{algorithm}[here]

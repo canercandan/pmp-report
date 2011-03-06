@@ -1,16 +1,16 @@
 \section{Mesure de performance}
 
-Je profite de ce rapport pour parler d'un travail qui m'a été demandé en entreprise. Nous utilisons le framework EO\footnote{Evolving Object, \url{http://eodev.sf.net}} pour développer nos algorithmes évolutionnaires\footnote{Algorithme évolutionnaire : \url{http://fr.wikipedia.org/wiki/Algorithme_evolutionnaire}}. Le sujet consistait à implémenter, au framework EO, un parallèlisme à mémoire partagée en utilisant OpenMP.
+Je profite de ce rapport pour parler d'un travail qui m'a été demandé en entreprise. Nous utilisons le framework EO\footnote{Evolving Object, \url{http://eodev.sf.net}} pour développer nos algorithmes évolutionnaires\footnote{Algorithme évolutionnaire : \url{http://fr.wikipedia.org/wiki/Algorithme_evolutionnaire}}. Le sujet consistait à implémenter, au framework EO, un parallélisme à mémoire partagée en utilisant OpenMP.
 
 \subsection{Préambule}
 
-Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individus aussi appelé échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.\\
+Avant de commencer il est important de préciser que les EA\footnote{Algorithmes évolutionnaires} travaillent sur une population d'individu aussi appelé échantillon. Un individu étant représenté par un point dans l'échantillon, la complexité d'un problème est définit par le nombre de dimensions pour chaque individu.\\
 
 Le problème est représenté par la fonction objectif qui prend en paramètre un individu (un point dans l'échantillon) et évalue toutes ses dimensions pour en déduire la qualité\footnote{Fitness en anglais}. La qualité est le critère de comparaison d'un point dans son échantillon.
 
 \subsection{Identifier les ressources les plus utilisées}
 
-Un test de profiling a été executé afin d'identifier les ressources les plus utilisées dans le framework EO. Le test nous a permi d'identifier une fonction qui est utilisée par une grande majorité des opérateurs\footnote{Opérateurs de sélection et variation} EO. Il s'agit de la fonction ``apply''. Elle prend en paramètres une population d'individus et un opérateur. Cette fonction va itérer sur tous les individus de la population et appliquer l'opérateur. Il peut être intéressant d'optimiser cette fonction. Nous allons nous limiter à transformer le code sequentiel en parallèle.
+Un test de profiling a été exécuté afin d'identifier les ressources les plus utilisées dans le framework EO. Le test nous a permit d'identifier une fonction qui est utilisée par une grande majorité des opérateurs\footnote{Opérateurs de sélection et variation} EO. Il s'agit de la fonction ``apply''. Elle prend en paramètres une population d'individu et un opérateur. Cette fonction va itérer sur tous les individus de la population et appliquer l'opérateur. Il peut être intéressant d'optimiser cette fonction. Nous allons nous limiter à transformer le code séquentiel en parallèle.
 
 \subsection{Pseudo-code de la fonction apply}
 
@@ -53,7 +53,7 @@ L'algorithme \ref{omp_apply} transforme la fonction ``apply'' en parallèle en u
 
 \subsection{Speed-up}
 
-Après avoir crée la fonction alternative employant le parallèlisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
+Après avoir crée la fonction alternative employant le parallélisme à mémoire partagée, appelé ``omp\_apply'', nous allons étudier une solution de mesure du speed-up\footnote{$S_p = \frac{T_1^*}{T_p}$ : \url{http ://en.wikipedia.org/wiki/Speedup}}.\\
 
 L'équation, en figure \ref{fig:mesure_speedup}, présente une méthode de mesure du speed-up et est implémentée dans l'algorithme \ref{algo_speedup}.
 
@@ -119,7 +119,7 @@ Une description des paramètres est disponible dans la figure \ref{fig:descripti
 
 \subsection{Mesures}
 
-En prenant en compte les paramètres décrits précédement, nous allons lancer les tests sur deux architectures matérielles différentes présenté en figure \ref{fig:architectures}.\\
+En prenant en compte les paramètres décrits précédemment, nous allons lancer les tests sur deux architectures matérielles différentes présenté en figure \ref{fig:architectures}.\\
 
 \begin{figure}[here]
   \centering
@@ -137,14 +137,14 @@ Pour visualiser l'évolution du speed-up, nous utilisons un outil de génératio
 
 \subsubsection{Fonctions objectifs}
 
-Il est important de simuler toutes les compléxités de problèmes que l'on peut être ammené à résoudre. Pour nos tests, le choix a été orienté vers deux fonctions objectifs de complexité différente présenté en figure \ref{fig:objectifs}.
+Il est important de simuler toutes les compléxités de problèmes que l'on peut être amené à résoudre. Pour nos tests, le choix a été orienté vers deux fonctions objectifs de complexité différente présenté en figure \ref{fig:objectifs}.
 
 \begin{figure}[here]
   \centering
   \begin{tabular}{ | l | c | l |}
     \hline
     \textbf{Fonction objectifs} & \textbf{Complexité en temps} & \textbf{Algorithme}\\\hline
-    L'algorithme du Sphere & $O(1)$ & $Sphere = \sum_{k=0}^n individu_k$\\\hline
+    La fonction Sphere & $O(1)$ & $Sphere = \sum_{k=0}^n individu_k$\\\hline
     Problème à temps variable quelconque & $O(n)$ & usleep($U(0,1) * 10$)\\\hline
   \end{tabular}
   \caption{Fonctions objectifs}
@@ -153,7 +153,7 @@ Il est important de simuler toutes les compléxités de problèmes que l'on peut
 
 \subsubsection{Benchmark}
 
-Pour faciliter et automatiser les tests, une liste de mesures a été élaboré avec les paramètres décrits précédement et un script contenant l'ensemble des tests à executer a été crée. La liste des mesures est présentée en figure \ref{fig:liste_mesures}.
+Pour faciliter et automatiser les tests, une liste de mesures a été élaboré avec les paramètres décrits précédemment et un script contenant l'ensemble des tests à exécuter a été crée. La liste des mesures est présentée en figure \ref{fig:liste_mesures}.
 
 \begin{figure}[here]
   \centering
@@ -176,7 +176,7 @@ Parmi les optimisations possibles en OpenMP, il existe deux types de planificati
 
 \subsubsection{Résultats en $O(1)$}
 
-Le benchmark a été executé dans un premier temps pour le problème du Sphere qui se résoud en temps constant. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédement.\\
+Le benchmark a été exécuté dans un premier temps pour la fonction Sphere qui se résoud en temps constant. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédemment.\\
 
 Les mesures sont présentées en fonction des processeurs utilisés et disponibles en figure \ref{fig:mesure_1_constant}, \ref{fig:mesure_2_constant}, \ref{fig:mesure_3_constant}, \ref{fig:mesure_4_constant} et \ref{fig:mesure_5_constant}.
 
@@ -244,11 +244,11 @@ Les mesures sont présentées en fonction des processeurs utilisés et disponibl
 
 \subsubsection{Résultats en $O(n)$}
 
-Dans un second temps, le benchmark est executé pour le problème qui se résoud en temps variable. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédement en figure \ref{fig:liste_mesures}.\\
+Dans un second temps, le benchmark est exécuté pour le problème qui se résoud en temps variable. Les résultats de chaque mesure sont numérotés d'après le tableau des mesures décrit précédemment en figure \ref{fig:liste_mesures}.\\
 
 Il est important d'ajouter que compte tenu de la résolution du problème en $O(n)$ et non plus en fonction de la dimension, celle ci perd de son importance. Ainsi les mesures 1, 4 et 5 ne sont plus nessaire à mesurer. Seules les mesures 2 et 3 seront présentées ci-dessous.\\
 
-Un algorithme séquentiel executé sur un processeur à 8 coeurs en comparaison avec un processeur à 2 coeurs est plus performant sur des petits échantillons. Nous avons donc choisit de définir les bornes des paramètres, décrits en figure \ref{fig:liste_mesures}, comme multiple du nombre de coeurs disponible.\\
+Un algorithme séquentiel exécuté sur un processeur à 8 coeurs en comparaison avec un processeur à 2 coeurs est plus performant sur des petits échantillons. Nous avons donc choisit de définir les bornes des paramètres, décrits en figure \ref{fig:liste_mesures}, comme multiple du nombre de coeurs disponible.\\
 
 Les mesures sont présentées en fonction des processeurs utilisés et disponibles en figure \ref{fig:mesure_2_variable} et \ref{fig:mesure_3_variable}.
 
@@ -275,15 +275,3 @@ Les mesures sont présentées en fonction des processeurs utilisés et disponibl
 \caption{Mesure 3 en $O(n)$ sur 2 et 8 coeurs}
 \label{fig:mesure_3_variable}
 \end{figure}
-
-\subsubsection{Conclusion}
-
-Pour un processeur à 2 coeurs, selon la complexité du problème utilisée, nous pouvons observer par la mesure du speedup que les ressources sont utilisées au maximum\footnote{cpu-bound} pour de grandes tailles d'échantillon. Les petites tailles d'échantillon restant dominées par une execution sequentielle.\\
-
-Pour un processeur à 8 coeurs, en hyperthreading, notre première observation consiste à montrer les limites de l'hyperthreading, en effet nous utilisons pas plus de 4 coeurs. Et pour rejoindre ce qui a été dit sur 2 coeurs, un plus grand nombre de petites tailles d'échantillon reste dominée par une execution sequentielle.\\
-
-La différence entre les deux complexités de problème s'observe dans la mesure de la dynamicité. En effet pour un problème en $O(1)$, la planification statique en OpenMP permet d'avoir une meilleur efficacité de travail tandis que en $O(n)$, la planification dynamique apporte quelque amélioration.\\
-
-Pour résumé nous avons comparé par nos mesures les 2 types de planification de tâches en OpenMP, les 2 compléxités de problèmes que nous serons ammené à parallèliser et finalement sur 2 types de processeurs différents.\\
-
-Un point que je n'ai pas eu le temps d'éclaircir et que j'invite à regarder est l'utilisation de l'auto parallèlisation intégerer au compilateur GCC\footnote{Automatic Parallelization : \url{http://gcc.gnu.org/wiki/openmp}}. Il s'agit d'un niveau d'optimisation qui consiste à verifier la non dépendance des données dans les boucles et les parallèliser.

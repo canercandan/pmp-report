@@ -10,6 +10,7 @@ SET(SOURCE_INPUTS
   decoupage.tex
   design.tex
   mesure.tex
+  conclusion.tex
   )
 
 SET(IMAGES_PATH "images")
