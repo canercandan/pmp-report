@@ -1,0 +1,11 @@
+\subsubsection{Conclusion}
+
+Pour un processeur à 2 coeurs, selon la complexité du problème utilisée, nous pouvons observer par la mesure du speedup que les ressources sont utilisées au maximum\footnote{cpu-bound} pour de grandes tailles d'échantillon. Les petites tailles d'échantillon restant dominées par une exécution séquentielle.\\
+
+Pour un processeur à 8 coeurs, en hyperthreading, notre première observation consiste à montrer les limites de l'hyperthreading, en effet nous utilisons pas plus de 4 coeurs. Et pour rejoindre ce qui a été dit sur 2 coeurs, un plus grand nombre de petites tailles d'échantillon reste dominée par une exécution séquentielle.\\
+
+La différence entre les deux complexités de problème s'observe dans la mesure de la dynamicité. En effet pour un problème en $O(1)$, la planification statique en OpenMP permet d'avoir une meilleur efficacité de travail tandis que en $O(n)$, la planification dynamique apporte quelque amélioration.\\
+
+Pour résumer nous avons comparé par nos mesures les 2 types de planification de tâches en OpenMP, les 2 complexités de problèmes que nous serons amené à paralléliser et finalement sur 2 types de processeurs différents.\\
+
+Un point que je n'ai pas eu le temps d'éclaircir que j'invite à regarder est l'utilisation de l'auto parallélisation intégré au compilateur GCC\footnote{Automatic Parallelization : \url{http://gcc.gnu.org/wiki/openmp}}. Il s'agit d'un niveau d'optimisation qui consiste à vérifier la non dépendance des données dans les boucles et les paralléliser.
