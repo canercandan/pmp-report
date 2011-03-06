@@ -1,11 +1,11 @@
 Conseils de Johann:
 
-- Changer la maniere de definir la complexité pour les fonctions objectifs
-- Mettre une graphe montrant la mesure intermédiaire de la planification dynamique pour obtenir au total 3 graphes par mesures: speedup static, speedup dynamique, dynamicité
+- Changer la manière de définir la complexité pour les fonctions objectifs
+- Insérer un graphe montrant la mesure intermédiaire de la planification dynamique pour obtenir au total 3 graphes par mesures: speedup static, speedup dynamique et dynamicité
 - Générer le graphe de T_p et T_1 pour chaque mesure
 - Changer la légende des mesures, rendre les graphes plus claire quitte à avoir de la redondance d'infos.
 
-- Faire des mesures de la variance en faisant varié P
+- Faire des mesures de variance en faisant varier P
   * 0-10
   * 0-100
   * 0-1000
